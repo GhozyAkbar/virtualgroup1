@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: krakend-config
+data:
+  krakend.json: |
+    {
+        "version": 3,
+        "name": "honeypot-gateway",
+        "port": 8000,
+        "cache_ttl": "300s",
+        "timeout": "120s",
+        "endpoints": [
+          {
+            "endpoint": "/honeyphy",
+            "method": "GET",
+            "backend": [
+              {
+                "url_pattern": "/",
+                "host": [
+                  "http://honeyphy:8080"
+                ],
+                "extra_config": {}
+              }
+            ]
+          },
+          {
+            "endpoint": "/honeyphy/log",
+            "method": "GET",
+            "backend": [
+              {
+                "url_pattern": "/",
+                "host": [
+                  "http://honeyphy:9000"
+                ],
+                "extra_config": {}
+              }
+            ]
+          },
+          {
+            "endpoint":"/crawler",
+            "method": "GET",
+            "output_encoding": "json",
+            "backend": [
+                {
+                    "url_pattern": "/info",
+                    "host": [
+                        "http://crawler:5000"
+                    ],
+                    "encoding": "json"
+                }
+            ]
+          },
+          {
+            "endpoint": "/crawler/scan",
+            "method": "POST",
+            "output_encoding": "json",
+            "backend": [
+              {
+                "url_pattern": "/scan",
+                "host": [
+                  "http://crawler:5000"
+                ],
+                "encoding": "json"
+              }
+            ]
+          },
+          {
+            "endpoint": "/certificates",
+            "method": "GET",
+            "extra_config": {},
+            "input_query_strings":[
+                "domain"
+            ],
+            "input_headers": [
+                "User-Agent",
+                "Accept"
+            ],
+            "backend": [
+              {
+                "url_pattern": "/",
+                "host": ["http://cert:8500"],
+                "extra_config": {}
+              }
+            ]
+          },
+          {
+            "endpoint": "/virtot",
+            "method": "POST",
+            "output_encoding": "json",
+            "backend": [
+              {
+                "url_pattern": "/",
+                "host": [
+                  "http://virtot:8600"
+                ],
+                "encoding": "json"
+              }
+            ]
+          }
+        ]
+    }

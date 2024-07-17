@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: honeyphy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: honeyphy
+  template:
+    metadata:
+      labels:
+        app: honeyphy
+    spec:
+      containers:
+        - name: honeyphy
+          image: ghozyakbar2323/honeyphy:v1
+          ports:
+            - containerPort: 8080
+            - containerPort: 9000
+          volumeMounts:
+            - name: honeyphy-volume
+              mountPath: /app/honeyphy
+          env:
+            - name: PORT
+              value: "8080"
+            - name: PORT
+              value: "9000"
+      volumes:
+        - name: honeyphy-volume
+          hostPath:
+            path: /honeyphy
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: honeyphy-service
+spec:
+  type: NodePort
+  selector:
+    app: honeyphy
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 30081  # Ganti dengan port yang tidak digunakan
+    - name: log
+      port: 9000
+      targetPort: 9000
+      nodePort: 30091  # Ganti dengan port yang tidak digunakan
+

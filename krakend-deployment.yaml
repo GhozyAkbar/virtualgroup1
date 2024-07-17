@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: krakend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: krakend
+  template:
+    metadata:
+      labels:
+        app: krakend
+    spec:
+      containers:
+        - name: krakend
+          image: devopsfaith/krakend:2.1.1
+          ports:
+            - containerPort: 8000
+          volumeMounts:
+            - name: krakend-config
+              mountPath: /etc/krakend/krakend.json
+              subPath: krakend.json
+          envFrom:
+            - configMapRef:
+                name: krakend-config
+      volumes:
+        - name: krakend-config
+          configMap:
+            name: krakend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: krakend-service
+spec:
+  type: NodePort
+  selector:
+    app: krakend
+  ports:
+    - port: 8000
+      targetPort: 8000
+      nodePort: 30080

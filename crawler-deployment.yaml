@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crawler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crawler
+  template:
+    metadata:
+      labels:
+        app: crawler
+    spec:
+      containers:
+        - name: crawler
+          image: kel4/crawler:v1
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+            - name: crawler-volume
+              mountPath: /app/crawler
+      volumes:
+        - name: crawler-volume
+          hostPath:
+            path: /
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: crawler-service
+spec:
+  type: NodePort
+  selector:
+    app: crawler
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30050
